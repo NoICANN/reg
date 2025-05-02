@@ -1,0 +1,41 @@
+# .github/workflows/create-pr.yml
+name: Generate Domain PRs
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *' # every hour
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install deps
+        run: npm install @supabase/supabase-js simple-git
+
+      - name: Generate PR
+        run: node .github/scripts/generate-pr.js
+
+      - name: Push & Create PR
+        run: |
+          git config user.name "noicann-bot"
+          git config user.email "bot@noicann.org"
+          git checkout -b domain-reg-${{ github.run_id }}
+          git add data/
+          git commit -m "Register new domains"
+          git push origin domain-reg-${{ github.run_id }}
+          gh pr create --title "Register Domains" --body "Auto-generated domain PR" --base main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

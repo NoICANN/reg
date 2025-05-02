@@ -1,0 +1,36 @@
+<!-- index.html -->
+<form id="domainForm">
+    <input name="domain" placeholder="Domain (e.g. hello)" required>
+    <input name="tld" placeholder="TLD (e.g. web)" required>
+    <input name="owner" placeholder="Owner (GitHub URL)" required>
+    <button type="submit">Register Domain</button>
+  </form>
+  
+  <div id="status"></div>
+  
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+  
+    const supabase = createClient(
+      'https://YOUR_PROJECT.supabase.co',
+      'YOUR_PUBLIC_ANON_KEY'
+    );
+  
+    const form = document.getElementById('domainForm');
+    const status = document.getElementById('status');
+  
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form));
+  
+      const { error } = await supabase.from('domains').insert({
+        domain: data.domain,
+        tld: data.tld,
+        owner: data.owner,
+        status: 'pending'
+      });
+  
+      status.textContent = error ? `❌ ${error.message}` : '✅ Domain submitted!';
+    }
+  </script>
+  
