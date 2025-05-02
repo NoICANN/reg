@@ -3,7 +3,11 @@ name: Generate & Publish Domain PRs
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 * * * *'   # runs at the top of every hour
+    - cron: '0 * * * *'
+
+permissions:
+  contents: write
+  pull-requests: write
 
 env:
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -53,7 +57,7 @@ jobs:
           # Stage only the data/ directory
           git add data/
           git commit -m "🔖 Register new domains (auto-generated)"
-          git push origin $BRANCH
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/NoICANN/reg.git
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
