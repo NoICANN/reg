@@ -1,4 +1,3 @@
-# .github/workflows/create-pr.yml
 name: Generate Domain PRs
 
 on:
