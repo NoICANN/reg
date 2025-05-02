@@ -3,7 +3,11 @@ name: Generate & Publish Domain PRs
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 * * * *'   # runs at the top of every hour
+    - cron: '0 * * * *'
+
+permissions:
+  contents: write
+  pull-requests: write
 
 permissions:
    contents: write 
