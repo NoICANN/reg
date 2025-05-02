@@ -25,7 +25,7 @@ jobs:
       - name: Install deps
         run: npm install @supabase/supabase-js simple-git
 
-      - name: Generate PR files
+        - name: Generate PR files
         run: node .github/scripts/generate-pr.js
 
       - name: Check for changes
@@ -42,13 +42,17 @@ jobs:
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Commit and PR
+      - name: Add files and commit
         if: steps.git-check.outputs.changed == 'true'
         run: |
-          git checkout -b domain-reg-${{ github.run_id }}
-          git add data/
+          git add .
           git commit -m "Register new domains"
           git push origin domain-reg-${{ github.run_id }}
+
+      - name: Create PR
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
           gh pr create --title "Register Domains" --body "Auto-generated domain PR" --base main
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
