@@ -25,13 +25,26 @@ jobs:
       - name: Install deps
         run: npm install @supabase/supabase-js simple-git
 
-      - name: Generate PR
+      - name: Generate PR files
         run: node .github/scripts/generate-pr.js
 
-      - name: Push & Create PR
+      - name: Check for changes
+        id: git-check
         run: |
           git config user.name "noicann-bot"
           git config user.email "bot@noicann.org"
+          git status
+          if git diff --quiet; then
+            echo "No changes found"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and PR
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
           git checkout -b domain-reg-${{ github.run_id }}
           git add data/
           git commit -m "Register new domains"
