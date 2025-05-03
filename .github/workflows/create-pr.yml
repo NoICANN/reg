@@ -40,7 +40,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Create branch and commit new domains
+      - name: Commit domain files
         run: |
           BRANCH=domain-reg-${{ github.run_id }}
           git checkout -b $BRANCH
@@ -50,21 +50,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Fetch main for diff check
-        run: git fetch origin main:main
-
-      - name: Debug diff check
-        run: |
-          echo "Checking for changes in data/*.json"
-          git diff origin/main -- data/*.json || echo "No changes in data/*.json"
-          if git diff --quiet origin/main -- data/*.json; then
-            echo "no-changes=true" >> $GITHUB_OUTPUT
-          else
-            echo "no-changes=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Create or update Pull Request
-        if: steps.diff-check.outputs.no-changes == 'false'
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
