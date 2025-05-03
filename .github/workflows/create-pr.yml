@@ -53,11 +53,11 @@ jobs:
       - name: Fetch main for diff check
         run: git fetch origin main:main
 
-      - name: Check for real changes
+      - name: Check for real changes in data/*.json
         id: diff-check
         run: |
-          # if there is no diff between origin/main and HEAD, exit early
-          if git diff --quiet origin/main...HEAD; then
+          # Check only the target files for changes
+          if git diff --quiet origin/main -- data/*.json; then
             echo "no-changes=true" >> $GITHUB_OUTPUT
           else
             echo "no-changes=false" >> $GITHUB_OUTPUT
