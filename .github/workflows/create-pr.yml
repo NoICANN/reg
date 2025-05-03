@@ -53,10 +53,10 @@ jobs:
       - name: Fetch main for diff check
         run: git fetch origin main:main
 
-      - name: Check for real changes in data/*.json
-        id: diff-check
+      - name: Debug diff check
         run: |
-          # Check only the target files for changes
+          echo "Checking for changes in data/*.json"
+          git diff origin/main -- data/*.json || echo "No changes in data/*.json"
           if git diff --quiet origin/main -- data/*.json; then
             echo "no-changes=true" >> $GITHUB_OUTPUT
           else
@@ -78,4 +78,3 @@ jobs:
           add-paths: |
             data/*.json
           draft: false
-          labels: domain
