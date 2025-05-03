@@ -1,4 +1,4 @@
-name: Register New Domains
+name: Generate & Publish Domain PRs
 
 on:
   workflow_dispatch:
@@ -50,6 +50,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check if changes were made
+        run: |
+          CHANGES=$(git diff --quiet || echo "changes")
+          if [ "$CHANGES" != "changes" ]; then
+            echo "No changes to commit, skipping PR creation"
+            exit 0
+          fi
+
       - name: Create or update Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -64,4 +72,4 @@ jobs:
           add-paths: |
             data/*.json
           draft: false
-          repository: NoICANN/reg
+          delete-branch: true
