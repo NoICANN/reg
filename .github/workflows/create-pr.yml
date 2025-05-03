@@ -1,6 +1,7 @@
 name: Register New Domains
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
