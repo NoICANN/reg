@@ -18,20 +18,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: '20'
 
-      - run: npm install
+      - name: Install dependencies
+        run: npm install
 
-      - run: node .github/scripts/generate-pr.js
+      - name: Generate domain files
+        run: node .github/scripts/generate-pr.js
 
-      - name: Commit domain files
+      - name: Commit new domain files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -39,11 +43,14 @@ jobs:
           git add data/*.json
           git commit -m "🔖 Register new domains (auto-generated)"
           git push --set-upstream origin domain-reg-${{ github.run_id }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Pull Request
+      - name: Create (or update) Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "🔖 Register new domains (auto-generated)"
           branch: domain-reg-${{ github.run_id }}
           base: main
           title: "Register new domain(s)"
@@ -52,3 +59,7 @@ jobs:
             new domain requests from Supabase.
           add-paths: |
             data/*.json
+          draft: false
+          push-to-fork: false
+          delete-branch: true
+          labels: domain
