@@ -78,5 +78,4 @@ jobs:
           add-paths: |
             data/*.json
           draft: false
-          delete-branch: true
           labels: domain
